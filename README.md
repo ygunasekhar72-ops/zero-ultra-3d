@@ -40,6 +40,11 @@ Zero dependencies, zero build step. Three.js r186 is vendored in `vendor/`
   1× / 1.6× / 2× / 2.5× (persisted). Peak = 2.5× ≈ 3600×2250 internal on
   a 1440×900 screen, with 4× MSAA, 2048px PCF-soft shadows and a 4K label
   texture. Adaptive guard steps quality down automatically if FPS drops.
+- **Cinema ▶ button** (bottom-right) — optional auto-scroll: the page
+  films itself through the whole 7-section sequence in ~17 seconds of
+  ultra-smooth motion; any wheel/touch/keypress hands control back
+- **Q·AUTO button** — fps-adaptive render scale (converges to the
+  highest quality the device holds above ~50fps); click to fix 1×–2.5×
 - **Signature effects**: condensation droplets with true lens refraction,
   cold vapor, floor mirror reflection, orbiting key-light sweep
 - **PNG capture** (camera icon) — downloads a clean product still at the

@@ -19,8 +19,8 @@ export function createCinema() {
     const max = maxScroll();
     // at (near) the end: restart from the top for a replay
     if (window.scrollY > max - 10) window.scrollTo(0, 0);
-    // full journey ≈ 60 seconds → smooth cinematic pacing
-    speed = maxScroll() / 58;
+    // full journey ≈ 17 seconds — brisk, video-trailer pacing
+    speed = maxScroll() / 17;
     active = true;
     stopCbs.forEach((f) => f(true));
   }
