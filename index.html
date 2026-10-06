@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>MONSTER ZERO ULTRA — Real-Time 3D Concept</title>
+<meta name="description" content="An interactive cinematic WebGL product experience: the Zero Ultra can, modeled and rendered entirely in real time. Drag it, spin it, explore it.">
+<meta property="og:title" content="MONSTER ZERO ULTRA — Real-Time 3D">
+<meta property="og:description" content="An interactive cinematic WebGL product experience: the white can with real-time condensation, studio lighting and a scroll-driven camera film. Not a photograph.">
+<meta property="og:image" content="assets/og.png">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="MONSTER ZERO ULTRA — Real-Time 3D">
+<meta name="twitter:description" content="The white can, rendered live in your browser. Drag it.">
+<meta name="twitter:image" content="assets/og.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23e8eaee'/%3E%3Cpath d='M16 5l4 14-4-3-4 3z' fill='%23141619'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="./styles/main.css">
+<script type="importmap">
+{
+  "imports": {
+    "three": "./vendor/three.module.js",
+    "three/addons/": "./vendor/"
+  }
+}
+</script>
+</head>
+<body>
+
+<canvas id="scene" aria-hidden="true" tabindex="0"></canvas>
+
+<!-- ==================== UI LAYER ==================== -->
+<div id="ui">
+
+  <header class="nav" aria-label="Site">
+    <div class="nav-brand">
+      <span class="nav-claw" aria-hidden="true">///</span>
+      <span class="nav-name">M&Oslash;NSTER<span class="nav-dim">&nbsp;/ CONCEPT</span></span>
+    </div>
+    <div class="nav-meta">
+      <span class="nav-tag">ZERO ULTRA</span>
+      <span class="nav-dot" aria-hidden="true"></span>
+      <span class="nav-tag nav-dim">WEBGL 3D STUDY</span>
+      <span class="nav-tag cart-tag" id="cartTag" hidden>· CART <span id="cartCount">0</span></span>
+      <button class="sound-btn" id="shotBtn" type="button" aria-label="Save PNG still" title="Save PNG still">
+        <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 8h3l2-2.5h6L17 8h3v11H4z"></path>
+          <circle cx="12" cy="13" r="3.2"></circle>
+        </svg>
+      </button>
+      <button class="sound-btn" id="fsBtn" type="button" aria-label="Toggle fullscreen" title="Fullscreen">
+        <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+          <path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"></path>
+        </svg>
+      </button>
+      <button class="sound-btn" id="soundBtn" type="button" aria-pressed="false" aria-label="Toggle sound">
+        <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 9.5v5h3.5L12 19V5L7.5 9.5H4z" fill="currentColor" stroke="none"></path>
+          <path class="snd-waves" d="M15.5 9.2a4 4 0 0 1 0 5.6M18 6.8a7.4 7.4 0 0 1 0 10.4"></path>
+          <path class="snd-off" d="M15.5 9.5l5 5M20.5 9.5l-5 5" style="display:none"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- 00 HERO -->
+    <section class="panel panel--hero" data-section aria-label="Intro">
+      <div class="content content--hero">
+        <p class="eyebrow" data-reveal>REAL-TIME WEBGL PRODUCT STUDY</p>
+        <h1 class="hero-title" data-reveal>ZERO&nbsp;ULTRA</h1>
+        <p class="hero-sub" data-reveal>The white can &mdash; modeled, lit and rendered entirely inside your browser. Nothing here is a photograph.</p>
+      </div>
+      <div class="hint" data-reveal aria-hidden="true">
+        <span class="hint-key">DRAG</span> to spin the can
+        <span class="hint-scroll" aria-hidden="true"><span class="hint-sep"></span>
+        <span class="hint-key">SCROLL</span> to roll the camera</span>
+      </div>
+    </section>
+
+    <!-- 01 REVEAL -->
+    <section class="panel panel--right" data-section aria-label="Reveal">
+      <div class="content">
+        <p class="section-index" data-reveal>01 / REVEAL</p>
+        <h2 class="section-title" data-reveal>COMPUTED,<br>NOT PHOTOGRAPHED</h2>
+        <p class="section-copy" data-reveal>Every highlight sweeping this aluminum is calculated per frame &mdash; environment reflections, brushed frost, machined seams. Move the can. The light answers.</p>
+      </div>
+    </section>
+
+    <!-- 02 DETAIL -->
+    <section class="panel panel--left" data-section aria-label="Detail">
+      <div class="content">
+        <p class="section-index" data-reveal>02 / DETAIL</p>
+        <h2 class="section-title" data-reveal>ENGINEERED<br>SURFACES</h2>
+        <p class="section-copy" data-reveal>A double-seam lid, a stay-on tab, a score line tuned to the millimeter. The frost texture is painted straight onto the cylindrical wrap &mdash; it curves with the metal.</p>
+      </div>
+    </section>
+
+    <!-- 03 ORBIT -->
+    <section class="panel panel--right" data-section aria-label="Orbit">
+      <div class="content">
+        <p class="section-index" data-reveal>03 / ORBIT</p>
+        <h2 class="section-title" data-reveal>A FULL<br>REVOLUTION</h2>
+        <p class="section-copy" data-reveal>The camera rolls a complete circle around the object. The silhouette, the perspective and the specular streaks all change &mdash; because the can is genuinely three-dimensional.</p>
+      </div>
+    </section>
+
+    <!-- 04 EXPLODED -->
+    <section class="panel panel--left" data-section aria-label="Exploded view">
+      <div class="content">
+        <p class="section-index" data-reveal>04 / ANATOMY</p>
+        <h2 class="section-title" data-reveal>EXPLODED<br>VIEW</h2>
+        <p class="section-copy" data-reveal>Four machined components, separated in real space &mdash; tab, lid, printed wall and base dome. Every part is its own mesh in the scene.</p>
+        <ul class="parts" data-reveal aria-label="Can components">
+          <li class="part"><span class="part-key"></span>TAB &mdash; STAY-ON CLOSURE</li>
+          <li class="part"><span class="part-key"></span>LID &mdash; DOUBLE-SEAM TOP</li>
+          <li class="part"><span class="part-key"></span>WALL &mdash; FROST PRINT WRAP</li>
+          <li class="part"><span class="part-key"></span>BASE &mdash; DISHED DOME</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 05 FORMATION -->
+    <section class="panel panel--center" data-section aria-label="Formation">
+      <div class="content content--narrow">
+        <p class="section-index" data-reveal>05 / FORMATION</p>
+        <h2 class="section-title" data-reveal>THE&nbsp;FORMATION</h2>
+        <p class="section-copy" data-reveal>One can, multiplied. Same geometry, same frost &mdash; three procedural bodies sharing a single studio of light.</p>
+      </div>
+    </section>
+
+    <!-- 06 FINAL -->
+    <section class="panel panel--final" data-section aria-label="Finale">
+      <div class="content content--final">
+        <p class="eyebrow" data-reveal>06 / FINALE</p>
+        <h2 class="final-title" data-reveal>UNLEASH<br>THE&nbsp;FROST</h2>
+        <button class="btn" id="replayBtn" data-reveal type="button">REPLAY THE SEQUENCE</button>
+        <footer class="foot" data-reveal>
+          <p>Independent non-commercial concept study rendered with Three.js.<br>Not affiliated with, sponsored or endorsed by Monster Energy Company. Product name used for visual reference only.</p>
+        </footer>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- brightness control -->
+<div class="light-ctrl" id="lightCtrl" role="group" aria-label="Scene brightness">
+  <div class="light-panel" id="lightPanel">
+    <span class="light-label" id="lightLabel">LIGHT</span>
+    <input type="range" id="lightRange" min="50" max="150" step="1" value="88" aria-label="Brightness level">
+    <span class="light-value" id="lightValue">88%</span>
+  </div>
+  <button class="light-toggle" id="qBtn" type="button" aria-label="Cycle render quality">
+    <span class="q-label" id="qLabel">Q</span>
+  </button>
+  <button class="light-toggle" id="lightToggle" type="button" aria-expanded="true" aria-controls="lightPanel" aria-label="Toggle brightness control">
+    <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+      <circle cx="12" cy="12" r="4.2"></circle>
+      <path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5.2 5.2l1.7 1.7M17.1 17.1l1.7 1.7M18.8 5.2l-1.7 1.7M6.9 17.1l-1.7 1.7"></path>
+    </svg>
+  </button>
+</div>
+
+<!-- commerce dock -->
+<div class="buy-dock" id="buyDock">
+  <div class="buy-card" id="buyCard" role="dialog" aria-label="Order Zero Ultra" hidden>
+    <p class="buy-title">ZERO ULTRA</p>
+    <p class="buy-sub">500ML ALUMINUM · SINGLE CAN</p>
+    <div class="buy-row">
+      <div class="qty" role="group" aria-label="Quantity">
+        <button id="qtyMinus" type="button" aria-label="Decrease quantity">&minus;</button>
+        <span id="qtyVal" aria-live="polite">1</span>
+        <button id="qtyPlus" type="button" aria-label="Increase quantity">+</button>
+      </div>
+      <span class="buy-total" id="buyTotal">$2.49</span>
+    </div>
+    <button class="btn buy-add" id="buyAdd" type="button">ADD TO CART</button>
+    <p class="buy-note">Concept demo — no real checkout.</p>
+  </div>
+  <button class="buy-chip" id="buyChip" type="button" aria-haspopup="dialog" aria-expanded="false">
+    <span class="buy-claw" aria-hidden="true">///</span>
+    <span class="buy-name">ZERO ULTRA · 500ML</span>
+    <span class="buy-price">$2.49</span>
+    <span class="buy-cta">BUY</span>
+  </button>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<!-- hotspot layer (projected from 3D anchors) -->
+<div id="hotspots" aria-hidden="false"></div>
+
+<!-- vignette -->
+<div class="vignette" aria-hidden="true"></div>
+
+<!-- loading -->
+<div id="loader" role="status" aria-label="Loading">
+  <div class="loader-inner">
+    <div class="loader-can" aria-hidden="true"><i></i></div>
+    <p class="loader-word">M&Oslash;NSTER <span>ZERO ULTRA</span></p>
+    <div class="loader-bar" aria-hidden="true"><span></span></div>
+    <p class="loader-status" id="loaderStatus">CHILLING THE ALUMINUM</p>
+  </div>
+</div>
+
+<!-- WebGL fallback -->
+<div id="fallback" hidden>
+  <div class="fallback-inner">
+    <p class="eyebrow">WEBGL UNAVAILABLE</p>
+    <h1 class="hero-title">ZERO ULTRA</h1>
+    <p class="hero-sub">Your browser or GPU could not start WebGL, so the 3D stage can't run here. Try a current version of Chrome, Edge or Firefox with hardware acceleration enabled.</p>
+  </div>
+</div>
+
+<noscript>
+  <div class="fallback-inner"><p class="hero-sub">This experience requires JavaScript.</p></div>
+</noscript>
+
+<script>
+// ===== PRODUCT CONFIG — reskin the commerce layer here =====
+// checkoutUrl: paste a Shopify cart permalink to enable real checkout,
+// e.g. 'https://your-store.myshopify.com/cart/VARIANT_ID:' — the
+// quantity is appended automatically (…/cart/123:3). Empty = demo mode.
+window.ZU_CONFIG = {
+  name: 'ZERO ULTRA',
+  subtitle: '500ML ALUMINUM · SINGLE CAN',
+  price: 2.49,
+  currency: '$',
+  checkoutUrl: '',
+};
+// capture all errors for QA (harmless in production)
+window.__errs = [];
+window.addEventListener('error', (e) => window.__errs.push(String(e.message || e.error)));
+window.addEventListener('unhandledrejection', (e) => window.__errs.push('rejection: ' + String(e.reason)));
+(function () {
+  const orig = console.error;
+  console.error = (...a) => {
+    window.__errs.push('console.error: ' + a.map(String).join(' ').slice(0, 240));
+    orig(...a);
+  };
+})();
+</script>
+<script type="module" src="./src/main.js"></script>
+</body>
+</html>
