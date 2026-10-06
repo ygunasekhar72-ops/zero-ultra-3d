@@ -12,7 +12,8 @@ import { createScrollDirector } from './scroll/scrollDirector.js';
 import { createHotspots } from './ui/hotspots.js';
 import { createCommerce } from './ui/commerce.js';
 import { createRail } from './ui/rail.js';
-import { detectQuality, createFpsGuard, RENDER_STEPS } from './performance/quality.js';
+import { detectQuality, RENDER_STEPS, AUTO_LADDER } from './performance/quality.js';
+import { createCinema } from './ui/cinema.js';
 
 // ------------------------------------------------------------
 // Bootstrap. Canvas = fixed stage; DOM = interface layer.
@@ -72,10 +73,6 @@ if (world) {
   rig.setReducedMotion(quality.reducedMotion);
   const scroll = createScrollDirector();
   const hotspots = createHotspots(camera, can.group, scroll);
-  const fpsGuard = createFpsGuard(world, () => {
-    // graceful downgrade: drop post-processing, keep the 3D intact
-    world.composer = null;
-  });
 
   // --- particles, mist, condensation ---
   const particles = createParticles(quality.particles);
@@ -133,10 +130,26 @@ if (world) {
     sound.hiss();
   });
 
-  // --- commerce + section rail + pinch zoom ---
+  // --- commerce + section rail + pinch zoom + cinema ---
   createCommerce({ tick: sound.tick, pop: sound.pop });
   const rail = createRail(scroll);
   createPinchZoom(canvas, rig);
+  const sfxTick = () => sound.tick();
+
+  // CINEMA: optional auto-scroll — the page films itself through the
+  // whole sequence; any wheel/touch/key hands control back to the user
+  const cinema = createCinema();
+  const cinemaBtn = document.getElementById('cinemaBtn');
+  function reflectCinema(on) {
+    cinemaBtn.classList.toggle('on', on);
+    cinemaBtn.setAttribute('aria-pressed', String(on));
+    cinemaBtn.querySelector('.cine-play').style.display = on ? 'none' : '';
+    cinemaBtn.querySelector('.cine-stop').style.display = on ? '' : 'none';
+    cinemaBtn.setAttribute('aria-label', on ? 'Stop cinema auto-scroll' : 'Start cinema auto-scroll');
+  }
+  cinema.setTick(() => {}); // scroll advances via window.scrollTo in update()
+  cinema.onStop((on) => { if (!on) reflectCinema(cinema.isActive()); });
+  cinemaBtn.addEventListener('click', () => reflectCinema(cinema.toggle()));
 
   // --- fullscreen + PNG capture ---
   document.getElementById('fsBtn').addEventListener('click', () => {
@@ -238,24 +251,54 @@ if (world) {
   ]).then(() => setTimeout(hideLoader, 250));
   setTimeout(hideLoader, 4000); // hard cap
 
-  // --- render quality cycler (persisted) ---
+  // --- render quality: AUTO (fps-adaptive, ideal for mobile) or fixed ---
   const qBtn = document.getElementById('qBtn');
   const qLabel = document.getElementById('qLabel');
-  let savedQ = NaN;
-  try { savedQ = parseFloat(localStorage.getItem('zu-renderScale')); } catch { /* storage blocked */ }
-  let qStep = RENDER_STEPS.findIndex((s) => Math.abs(s - savedQ) < 0.01);
-  if (qStep < 0) qStep = RENDER_STEPS.findIndex((s) => Math.abs(s - quality.renderScale) < 0.01);
-  if (qStep < 0) qStep = 0;
+  const MODES = ['auto', ...RENDER_STEPS];
+  let savedQ = null;
+  try { savedQ = localStorage.getItem('zu-renderScale'); } catch { /* storage blocked */ }
+  let qMode = 'auto';
+  if (savedQ === 'auto') qMode = 'auto';
+  else if (savedQ && !Number.isNaN(parseFloat(savedQ))) qMode = parseFloat(savedQ);
+  let autoIdx = AUTO_LADDER.indexOf(
+    Math.min(AUTO_LADDER[AUTO_LADDER.length - 1], Math.max(1, quality.renderScale)),
+  );
+  if (autoIdx < 0) autoIdx = 1;
+
   function applyQ() {
-    world.setRenderScale(RENDER_STEPS[qStep]);
-    qLabel.textContent = `Q${RENDER_STEPS[qStep]}×`;
+    if (qMode === 'auto') {
+      world.setRenderScale(AUTO_LADDER[autoIdx]);
+      qLabel.textContent = 'Q·AUTO';
+    } else {
+      world.setRenderScale(qMode);
+      qLabel.textContent = `Q${qMode}×`;
+    }
   }
   applyQ();
   qBtn.addEventListener('click', () => {
-    qStep = (qStep + 1) % RENDER_STEPS.length;
+    const i = MODES.indexOf(qMode);
+    qMode = MODES[(i + 1) % MODES.length];
     applyQ();
-    try { localStorage.setItem('zu-renderScale', String(RENDER_STEPS[qStep])); } catch { /* storage blocked */ }
+    try { localStorage.setItem('zu-renderScale', String(qMode)); } catch { /* storage blocked */ }
+    sfxTick();
   });
+
+  // AUTO controller: converges to the highest scale holding ~50fps
+  let fpsEma = 60;
+  let autoCooldown = 0;
+  function autoQualityTick(dt) {
+    if (qMode !== 'auto') return;
+    autoCooldown -= dt;
+    if (autoCooldown > 0) return;
+    autoCooldown = 2.5;
+    if (fpsEma < 38 && autoIdx > 0) {
+      autoIdx -= 1;
+      world.setRenderScale(AUTO_LADDER[autoIdx]);
+    } else if (fpsEma > 52 && autoIdx < AUTO_LADDER.length - 1) {
+      autoIdx += 1;
+      world.setRenderScale(AUTO_LADDER[autoIdx]);
+    }
+  }
 
   // --- main loop ---
   const clock = new THREE.Clock();
@@ -268,6 +311,7 @@ if (world) {
     const dt = fixedDt ?? Math.min(clock.getDelta(), 0.05);
     const time = clock.elapsedTime;
 
+    cinema.update(dt); // advance auto-scroll before the director reads it
     const t = EMBED ? 0 : scroll.update();
     rig.update(t, dt);
     drag.update(dt, quality.reducedMotion);
@@ -317,7 +361,10 @@ if (world) {
     world.update(camera, canPos);
     hotspots.update();
     rail.update(scroll.visibility);
-    fpsGuard(dt);
+
+    // fps tracking → AUTO quality ladder
+    if (dt > 0) fpsEma = fpsEma * 0.94 + (1 / dt) * 0.06;
+    autoQualityTick(dt);
 
     if (world.composer) world.composer.render();
     else renderer.render(scene, camera);

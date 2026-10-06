@@ -5,6 +5,9 @@
 // ------------------------------------------------------------
 
 export const RENDER_STEPS = [1, 1.6, 2, 2.5];
+// gentle ladder for AUTO mode: converge to the highest scale the
+// device can hold above ~50fps
+export const AUTO_LADDER = [1, 1.25, 1.6, 2, 2.5];
 
 export function detectQuality() {
   const coarse = window.matchMedia('(pointer: coarse)').matches;

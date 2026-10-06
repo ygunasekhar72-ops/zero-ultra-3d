@@ -269,6 +269,7 @@ body { min-height: 100vh; }
 }
 .light-toggle:hover { transform: translateY(-2px); color: #fff; box-shadow: 0 6px 20px -6px rgba(77,141,255,.6); }
 .light-toggle:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+.light-toggle.on { color: var(--blue); box-shadow: 0 0 16px rgba(77, 141, 255, 0.5); }
 .q-label { font-size: 10px; font-weight: 800; letter-spacing: 0.02em; }
 .light-ctrl.collapsed .light-panel { opacity: 0; transform: translateX(10px); pointer-events: none; }
 .light-ctrl.collapsed .light-toggle { color: var(--ink-dim); }

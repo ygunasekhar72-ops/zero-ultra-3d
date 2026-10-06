@@ -151,6 +151,10 @@
     <input type="range" id="lightRange" min="50" max="150" step="1" value="88" aria-label="Brightness level">
     <span class="light-value" id="lightValue">88%</span>
   </div>
+  <button class="light-toggle" id="cinemaBtn" type="button" aria-pressed="false" aria-label="Start cinema auto-scroll" title="Cinema — auto-play the full sequence">
+    <svg class="cine-play" viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" fill="currentColor"><path d="M7 4.5l13 7.5-13 7.5z"></path></svg>
+    <svg class="cine-stop" viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" fill="currentColor" style="display:none"><rect x="6" y="6" width="12" height="12" rx="2"></rect></svg>
+  </button>
   <button class="light-toggle" id="qBtn" type="button" aria-label="Cycle render quality">
     <span class="q-label" id="qLabel">Q</span>
   </button>
